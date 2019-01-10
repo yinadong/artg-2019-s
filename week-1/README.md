@@ -21,9 +21,9 @@ cd Desktop
 git clone git@github.com:Siqister/artg-2019-s.git
 ```
 
-Once done, navigate into the week-1 folder...
+Once done, navigate into the course folder...
 ```
-cd artg-2019-s/week-1
+cd artg-2019-s
 ```
 
 ...and spin up a simple http server (pick one of the following commands)
