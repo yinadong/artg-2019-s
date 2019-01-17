@@ -1,13 +1,22 @@
-import { 
-	csv 
-} from 'd3';
+import './style.css';
+import {
+	metadataPromise,
+	combinedMigrationDataPromise
+} from './data';
+import DetailView from './views/DetailView';
 
-import { 
-	parseTradeData,
-	logDataSummary
-} from './utils';
+// Create modules
+const detailView = DetailView(document.querySelector('.detail-view'));
 
+// Import data
+// Once data is imported, propagate data to modules
+Promise.all([metadataPromise, combinedMigrationDataPromise])
+	.then(([metadata, migrationData]) => {
+		console.log('Data:import complete');
 
-const data = csv('./data/wto/WtoData_20190109214054.csv', parseTradeData);
+		console.log(metadata);
+		console.log(migrationData);
 
-data.then(logDataSummary);
+		detailView(migrationData, "250", true);
+	})
+

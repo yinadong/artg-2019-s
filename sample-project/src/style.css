@@ -1,0 +1,14 @@
+html,body,h1,h2,h3,div,a,p{
+	margin: 0;
+	padding: 0;
+}
+
+html,body{
+	height:100%;
+}
+.main{
+	height:100%;
+}
+.detail{
+	height:100%;
+}
