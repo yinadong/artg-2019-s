@@ -2,6 +2,42 @@ const migrationDataPromise = d3.csv('../data/un-migration/Table 1-Table 1.csv', 
 	.then(data => data.reduce((acc,v) => acc.concat(v), []));
 const countryCodePromise = d3.csv('../data/un-migration/ANNEX-Table 1.csv', parseCountryCode)
 	.then(data => new Map(data));
+const metadataPromise = d3.csv('../data/country-metadata.csv', parseMetadata);
+
+Promise.all([
+		migrationDataPromise,
+		countryCodePromise,
+		metadataPromise
+	])
+	.then(([migration, countryCode, metadata]) => {
+
+		const years = d3.nest()
+			.key(d => d.year)
+			.entries(migration) // array of 8 elements, for each element, {key:"1990", values:[...]}
+			.map(a => {
+				return {
+					key: a.key,
+					total: d3.sum(a.values, function(d){return d.value})
+				}
+			});
+
+		const origins = d3.nest()
+			.key(d => d.origin_name)
+			.entries(migration)
+			.map(a => {
+				return a.key
+			})
+
+		//Reduce/filter dataset down to those records originating from the US
+		const migrationFromUS = migration
+			.filter(d => { return d.origin_name === 'United States of America' })
+			.filter(d => d.dest_name === 'Japan')
+			.filter(d => d.year === 1995)
+
+		console.log(migrationFromUS[0]);
+
+	})
+
 
 
 /* 
