@@ -11,64 +11,42 @@ Promise.all([
 	])
 	.then(([migration, countryCode, metadata]) => {
 
-		const years = d3.nest()
-			.key(d => d.year)
-			.entries(migration) // array of 8 elements, for each element, {key:"1990", values:[...]}
-			.map(a => {
-				return {
-					key: a.key,
-					total: d3.sum(a.values, function(d){return d.value})
-				}
-			});
+		//Convert metadata to a map
+		const metadata_tmp = metadata.map(a => {
+			return [a.iso_num, a]
+		});
+		const metadataMap = new Map(metadata_tmp);
 
-		const origins = d3.nest()
-			.key(d => d.origin_name)
-			.entries(migration)
-			.map(a => {
-				return a.key
-			})
+		const migrationAugmented = migration.map(d => {
 
-		//Reduce/filter dataset down to those records originating from the US
-		const migrationFromUS = migration
-			.filter(d => { return d.origin_name === 'United States of America' })
-			.filter(d => d.dest_name === 'Japan')
-			.filter(d => d.year === 1995)
+			const origin_code = countryCode.get(d.origin_name);
+			const dest_code = countryCode.get(d.dest_name);
 
-		console.log(migrationFromUS[0]);
+			d.origin_code = origin_code;
+			d.dest_code = dest_code;
+
+			//Take the 3-digit code, get metadata record
+			const origin_metadata = metadataMap.get(origin_code);
+			const dest_metadata = metadataMap.get(dest_code);
+
+			// if(!origin_metadata){
+			// 	console.log(`lookup failed for ` + d.origin_name + ' ' + d.origin_code);
+			// }
+			// if(!dest_metadata){
+			// 	console.log(`lookup failed for ${d.origin_name} ${d.origin_code}`)
+			// }
+			if(origin_metadata){
+				d.origin_subregion = origin_metadata.subregion;
+			}
+			if(dest_metadata){
+				d.dest_subregion = dest_metadata.subregion;
+			}
+
+			return d;
+		});
+		console.log(migrationAugmented);
 
 	})
-
-
-
-/* 
- * DATA DISCOVERY
- */
-
-// Convert metadata into a map, with ISO_num as the key
-// Then console.log the metadata map and observe its structure
-
-// console.log countryCode map and observe its structure
-
-// For the migration dataset, how many years does it cover? How many origin countries? How many destination countries?
-
-// Let's filter this the migration dataset
-// How many people from the U.S. lived in Japan in the year 1995?
-
-// How many people from the U.S. lived abroad in the year 1995?
-
-// How many people from the U.S. lived aborad in all the years in the dataset?
-
-// How many people from abroad lived in the U.S. in all the years in the dataset?
-
-/* 
- * DATA TRANSFORMATION
- */
-// Join the migration dataset with countryCode
-
-// Further join the dataset with region and subregion
-
-// Nest/group data by subregion, and produce time-series data for each subregion
-
 
 
 //Utility functions for parsing metadata, migration data, and country code
@@ -88,7 +66,7 @@ function parseMetadata(d){
 function parseCountryCode(d){
 	return [
 		d['Region, subregion, country or area'],
-		d.Code
+		d.Code.padStart(3, '0')
 	]
 }
 
