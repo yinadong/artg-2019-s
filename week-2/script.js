@@ -44,6 +44,7 @@ Promise.all([
 
 			return d;
 		});
+		
 		console.log(migrationAugmented);
 
 	})
