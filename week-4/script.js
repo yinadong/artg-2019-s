@@ -29,12 +29,6 @@ Promise.all([
 			const origin_metadata = metadataMap.get(origin_code);
 			const dest_metadata = metadataMap.get(dest_code);
 
-			// if(!origin_metadata){
-			// 	console.log(`lookup failed for ` + d.origin_name + ' ' + d.origin_code);
-			// }
-			// if(!dest_metadata){
-			// 	console.log(`lookup failed for ${d.origin_name} ${d.origin_code}`)
-			// }
 			if(origin_metadata){
 				d.origin_subregion = origin_metadata.subregion;
 			}
@@ -45,32 +39,16 @@ Promise.all([
 			return d;
 		});
 		
-		console.log(migrationAugmented);
-
 		//Migration from the US (840) to any other place in the world
 		//filter the larger migration dataset to only the subset coming from the US
 		const migrationFiltered = migrationAugmented.filter(d => d.origin_code === "840"); //array of 1145 individual flows
-
-		//group or nest by year, end result is array of 7, one element for each year
-		const usData = d3.nest()
-			.key(d => d.year)
-			.entries(migrationFiltered)
-			.map(yearGroup => {
-				return {
-					year: +yearGroup.key,
-					total: d3.sum(yearGroup.values, d => d.value), //the array of roughly 200 of individual migration flows
-					max: d3.max(yearGroup.values, d => d.value),
-					min: d3.min(yearGroup.values, d => d.value)
-				}
-			});
-		console.log(usData);
 
 		//group by subregion
 		const subregionsData = d3.nest()
 			.key(d => d.dest_subregion)
 			.key(d => d.year)
 			.rollup(values => d3.sum(values, d => d.value))
-			.entries(migrationAugmented);
+			.entries(migrationFiltered);
 
 		d3.select('.main')
 			.selectAll('.chart') //0 
@@ -107,7 +85,7 @@ function lineChart(data, rootDOM){
 	const innerHeight = H - margin.t - margin.b;
 
 	const scaleX = d3.scaleLinear().domain([1985,2020]).range([0, innerWidth]);
-	const scaleY = d3.scaleLinear().domain([0, 25000000]).range([innerHeight, 0]);
+	const scaleY = d3.scaleLinear().domain([0, 250000]).range([innerHeight, 0]);
 
 	//take array of xy values, and produce a shape attribute for <path> element
 	const lineGenerator = d3.line()
@@ -184,11 +162,12 @@ function parseCountryCode(d){
 }
 
 function parseMigrationData(d){
-	if(+d.Code >= 900) return;
 
 	const migrationFlows = [];
 	const dest_name = d['Major area, region, country or area of destination'];
 	const year = +d.Year
+
+	if(+d.Code >= 900 || dest_name === '') return;
 	
 	delete d.Year;
 	delete d['Sort order'];
