@@ -1,0 +1,14 @@
+html,body,div{
+	margin:0;
+	padding:0;
+}
+
+.main{
+	width:960px;
+	margin:auto;
+}
+
+.nav{
+	height:144px;
+	background:yellow;
+}
