@@ -1,3 +1,5 @@
+import {nest, sum} from 'd3';
+
 //Utility functions for parsing metadata, migration data, and country code
 function parseMetadata(d){
 	return {
@@ -52,8 +54,23 @@ function parseMigrationData(d){
 	return migrationFlows;
 }
 
+function groupBySubregionByYear(code, migration){
+
+	const filteredData = migration.filter(d => d.origin_code === code);
+
+	const subregionsData = nest()
+		.key(d => d.dest_subregion)
+		.key(d => d.year)
+		.rollup(values => sum(values, d => d.value))
+		.entries(filteredData);
+
+	return subregionsData;
+
+}
+
 export {
 	parseMigrationData,
 	parseMetadata,
-	parseCountryCode
+	parseCountryCode,
+	groupBySubregionByYear
 }

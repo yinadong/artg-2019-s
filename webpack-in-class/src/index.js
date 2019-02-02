@@ -1,11 +1,14 @@
 import './style.css';
-import * as d3 from 'd3';
+import {select} from 'd3';
 
 import {
 	migrationDataPromise,
 	countryCodePromise,
 	metadataPromise
 } from './data';
+import {
+	groupBySubregionByYear
+} from './utils';
 import lineChart from './viewModules/lineChart';
 
 Promise.all([
@@ -39,14 +42,14 @@ Promise.all([
 	
 	//Migration from the US (840) to any other place in the world
 	//filter the larger migration dataset to only the subset coming from the US
-	const data = transform("840", migrationAugmented);
+	const data = groupBySubregionByYear("840", migrationAugmented);
 
 	//Render the charts
 	render(data);
 
 	//Build UI for <select> menu
 	const countryList = Array.from(countryCode.entries());
-	const menu = d3.select('.nav')
+	const menu = select('.nav')
 		.append('select')
 	menu.selectAll('option')
 		.data(countryList)
@@ -57,11 +60,12 @@ Promise.all([
 
 	//Define behavior for <select> menu
 	menu.on('change', function(){
+
 		const code = this.value; //3-digit code
 		const idx = this.selectedIndex;
 		const display = this.options[idx].innerHTML;
 
-		const data = transform(code, migrationAugmented);
+		const data = groupBySubregionByYear(code, migrationAugmented);
 		render(data);
 
 	});
@@ -69,25 +73,11 @@ Promise.all([
 
 });
 
-function transform(code, migration){
-
-	const filteredData = migration.filter(d => d.origin_code === code);
-
-	const subregionsData = d3.nest()
-		.key(d => d.dest_subregion)
-		.key(d => d.year)
-		.rollup(values => d3.sum(values, d => d.value))
-		.entries(filteredData);
-
-	return subregionsData;
-
-}
-
 function render(data){
 	
-	const charts = d3.select('.chart-container')
+	const charts = select('.chart-container')
 		.selectAll('.chart')
-		.data(data) //
+		.data(data, d => d.key);
 	const chartsEnter = charts.enter()
 		.append('div')
 		.attr('class','chart')
@@ -96,7 +86,7 @@ function render(data){
 	charts.merge(chartsEnter)
 		.each(function(d){
 			lineChart(
-				d.values, //array of 7
+				d.values, 
 				this
 			);
 		});

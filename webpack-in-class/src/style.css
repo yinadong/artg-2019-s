@@ -10,11 +10,21 @@ html,body,div{
 
 .nav{
 	height:144px;
-	background:yellow;
+	padding:32px 0;
 }
 
+/* Line chart */
 .chart{
-	width:320px;
-	height:240px;
+	width:240px;
+	height:196px;
 	float:left;
+}
+.chart .axis .domain{
+	display:none;
+}
+.chart .axis line{
+	stroke-opacity:0.2;
+}
+.chart .axis text{
+	fill: #333;
 }
