@@ -12,3 +12,9 @@ html,body,div{
 	height:144px;
 	background:yellow;
 }
+
+.chart{
+	width:320px;
+	height:240px;
+	float:left;
+}
