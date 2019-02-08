@@ -1,5 +1,6 @@
 import './style.css';
-import {select} from 'd3';
+import 'bootstrap/dist/css/bootstrap.css';
+import {select, max} from 'd3';
 
 import {
 	migrationDataPromise,
@@ -9,7 +10,7 @@ import {
 import {
 	groupBySubregionByYear
 } from './utils';
-import lineChart from './viewModules/lineChart';
+import LineChart from './viewModules/lineChart';
 
 Promise.all([
 		migrationDataPromise,
@@ -51,6 +52,7 @@ Promise.all([
 	const countryList = Array.from(countryCode.entries());
 	const menu = select('.nav')
 		.append('select')
+		.attr('class','form-control form-control-sm');
 	menu.selectAll('option')
 		.data(countryList)
 		.enter()
@@ -74,7 +76,19 @@ Promise.all([
 });
 
 function render(data){
-	
+
+	//Find max value in data
+	const maxValue = max( data.map(subregion => max(subregion.values, d => d.value)) ) //[]x18
+	console.log(maxValue);
+
+	//const lineChart = LineChart(maxValue)
+
+	const lineChart = LineChart()
+		.maxY(maxValue);
+
+	console.log(lineChart);
+
+
 	const charts = select('.chart-container')
 		.selectAll('.chart')
 		.data(data, d => d.key);
