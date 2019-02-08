@@ -45,13 +45,13 @@ function updatePlot1(data){
 		.data(data, d => d.name);
 	nodes.select('circle')
 		//.transition()
-		.style('fill','#aa0000'); //circles in the UPDATE selection are black; note the use of .transition
+		.style('fill','green'); //circles in the UPDATE selection are black; note the use of .transition
 
 	//ENTER SELECTION
 	const nodesEnter = nodes.enter()
 		.append('g').attr('class', 'node');
 	nodesEnter.append('circle')
-		.style('fill', '#03afeb'); //circles in the ENTER selection are colored differently
+		.style('fill', 'yellow'); //circles in the ENTER selection are colored differently
 	nodesEnter.append('text')
 		.attr('text-anchor', 'middle');
 
@@ -70,7 +70,10 @@ function updatePlot1(data){
 		.attr('r', d => d.value);
 
 	//EXIT SELECTION
-	nodes.exit().remove();
+	//nodes.exit().remove();
+	nodes.exit()
+		.select('circle')
+		.style('fill','red');
 }
 
 function updatePlot2(data){

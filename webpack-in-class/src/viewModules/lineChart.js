@@ -33,6 +33,7 @@ function lineChart(data, rootDOM){
 		.ticks(3)
 
 	const svg = d3.select(rootDOM)
+		.classed('line-chart',true)
 		.append('svg')
 		.attr('width', W)
 		.attr('height', H);
