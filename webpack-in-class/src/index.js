@@ -10,7 +10,10 @@ import {
 import {
 	groupBySubregionByYear
 } from './utils';
-import LineChart from './viewModules/lineChart';
+
+//View modules
+import Composition from './viewModules/Composition';
+import LineChart from './viewModules/LineChart';
 
 Promise.all([
 		migrationDataPromise,
@@ -41,12 +44,10 @@ Promise.all([
 		return d;
 	});
 	
-	//Migration from the US (840) to any other place in the world
-	//filter the larger migration dataset to only the subset coming from the US
-	const data = groupBySubregionByYear("840", migrationAugmented);
+	//Render the view modules
+	renderLineCharts(groupBySubregionByYear("840", migrationAugmented));
+	renderComposition(migrationAugmented.filter(d => d.origin_code === "840"));
 
-	//Render the charts
-	render(data);
 
 	//Build UI for <select> menu
 	const countryList = Array.from(countryCode.entries());
@@ -60,34 +61,31 @@ Promise.all([
 		.attr('value', d => d[1])
 		.html(d => d[0]);
 
+	//Build UI for countryTitle component
+	const title = select('.country-view')
+		.insert('h1', '.composition-container')
+		.html('World');
+
 	//Define behavior for <select> menu
 	menu.on('change', function(){
-
 		const code = this.value; //3-digit code
 		const idx = this.selectedIndex;
 		const display = this.options[idx].innerHTML;
-
-		const data = groupBySubregionByYear(code, migrationAugmented);
-		render(data);
-
+		
+		//Update other components
+		title.html(display);
+		renderLineCharts(groupBySubregionByYear(code, migrationAugmented));
 	});
-
 
 });
 
-function render(data){
+function renderLineCharts(data){
 
 	//Find max value in data
 	const maxValue = max( data.map(subregion => max(subregion.values, d => d.value)) ) //[]x18
-	console.log(maxValue);
-
-	//const lineChart = LineChart(maxValue)
 
 	const lineChart = LineChart()
 		.maxY(maxValue);
-
-	console.log(lineChart);
-
 
 	const charts = select('.chart-container')
 		.selectAll('.chart')
@@ -104,4 +102,13 @@ function render(data){
 				this
 			);
 		});
+}
+
+function renderComposition(data){
+
+	select('.composition-container')
+		.each(function(){
+			Composition(this, data)
+		});
+
 }

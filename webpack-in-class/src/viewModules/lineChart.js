@@ -43,45 +43,38 @@ function LineChart(){
 			.attr('width', W)
 			.attr('height', H);
 
-		//Append rest of DOM structure
+		//Append rest of DOM structure in the enter selection
 		const plotEnter = svgEnter.append('g')
 			.attr('class','plot')
 			.attr('transform', `translate(${margin.l}, ${margin.t})`);
-
 		plotEnter.append('path')
 			.attr('class','line')
 			.style('fill','none')
 			.style('stroke','#333')
 			.style('stroke-width','2px')
-
 		plotEnter.append('path')
 			.attr('class','area')
 			.style('fill-opacity',0.03)
-
 		plotEnter.append('g')
 			.attr('class','axis axis-x')
 			.attr('transform',`translate(0, ${innerHeight})`)
-
 		plotEnter.append('g')
 			.attr('class','axis axis-y')
 
-		//Update the update selection
+		//Update the update + enter selections
 		const plot = svg.merge(svgEnter).select('.plot');
 
 		plot.select('.line')
 			.datum(data)
 			.transition()
 			.attr('d', data => lineGenerator(data))
-
 		plot.select('.area')
 			.datum(data)
 			.transition()
 			.attr('d', data => areaGenerator(data))
-
 		plot.select('.axis-x')
 			.transition()
 			.call(axisX)
-
 		plot.select('.axis-y')
 			.transition()
 			.call(axisY);
@@ -90,7 +83,7 @@ function LineChart(){
 
 	exportFunction.maxY = function(_){
 		maxY = _;
-		//return this;
+		return this;
 	}
 
 	return exportFunction;
