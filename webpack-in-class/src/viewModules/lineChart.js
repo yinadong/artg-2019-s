@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 function LineChart(){
 
 	let maxY;
+	const bisect = d3.bisector(d => d.key).right; //this will give us a function
+	let cb;
 
 	function exportFunction(data, rootDOM){
 
@@ -60,6 +62,17 @@ function LineChart(){
 			.attr('transform',`translate(0, ${innerHeight})`)
 		plotEnter.append('g')
 			.attr('class','axis axis-y')
+		const tooltipEnter = plotEnter.append('g')
+			.attr('class','tool-tip')
+			.style('opacity',0)
+		tooltipEnter.append('circle').attr('r',3)
+		tooltipEnter.append('text').attr('text-anchor','middle')
+			.attr('dy', -10)
+		plotEnter.append('rect')
+			.attr('class','mouse-target')
+			.attr('width', innerWidth)
+			.attr('height', innerHeight)
+			.style('opacity', 0.01)
 
 		//Update the update + enter selections
 		const plot = svg.merge(svgEnter).select('.plot');
@@ -79,10 +92,42 @@ function LineChart(){
 			.transition()
 			.call(axisY);
 
+		//Event handling
+		plot
+			.select('.mouse-target')
+			.on('mouseenter', function(d){
+				plot.select('.tool-tip')
+					.style('opacity',1)
+			})
+			.on('mousemove', function(d){
+				const mouse = d3.mouse(this);
+				const mouseX = mouse[0];
+				const year = scaleX.invert(mouseX);
+				
+				const idx = bisect(data, year);
+				const datum = data[idx];
+
+				plot.select('.tool-tip')
+					.attr('transform', `translate(${scaleX(datum.key)}, ${scaleY(datum.value)})`)
+					.select('text')
+					.text(datum.value);
+
+				cb(datum.key);
+			})
+			.on('mouseleave', function(d){
+				plot.select('.tool-tip')
+					.style('opacity',0)
+			});
+
 	}
 
 	exportFunction.maxY = function(_){
 		maxY = _;
+		return this;
+	}
+
+	exportFunction.on = function(event, callback){
+		cb = callback;
 		return this;
 	}
 
