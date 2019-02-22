@@ -38,31 +38,52 @@ export default function Composition(rootDOM, data){
 	console.log(treemapData);
 
 	//Build DOM
+	//Append new <svg> only once with enter/exit/update hack
 	const svg = select(rootDOM)
-		.append('svg')
+		.selectAll('svg')
+		.data([1]);
+	const svgEnter = svg.enter()
+		.append('svg');
+	svgEnter
+		.append('g').attr('class','plot');
+
+	const plot = svg.merge(svgEnter)
 		.attr('width', W)
-		.attr('height', H);
-	const plot = svg
-		.append('g')
+		.attr('height', H)
+		.select('.plot')
 		.attr('transform', `translate(${margin.l}, ${margin.t})`);
+
 	const nodes = plot.selectAll('.node')
-		.data(treemapData.descendants().filter(d => d.height < 2), d => d.data.key);
+		.data(treemapData.descendants().filter(d => d.height < 2), d => d.data.key || d.data.dest_name);
+
+	nodes.exit().remove();
+
 	const nodesEnter = nodes.enter()
 		.append('g').attr('class','node');
 	nodesEnter.append('rect');
 	nodesEnter.append('text');
 	const nodesCombined = nodes.merge(nodesEnter);
 	nodesCombined
-		.attr('transform', d => `translate(${d.x0}, ${d.y0})`)
+		.transition()
+		.attr('transform', d => `translate(${d.x0}, ${d.y0})`);
+	nodesCombined
 		.select('rect')
+		.transition()
 		.attr('width', d => d.x1 - d.x0)
 		.attr('height', d => d.y1 - d.y0);
 	nodesCombined
 		.select('text')
-		.text(d => d.data.key);
+		.attr('transform', d => `translate(${(d.x1-d.x0)/2}, ${(d.y1-d.y0)/2})`)
+		.attr('text-anchor','middle')
+		.filter(d => (d.x1-d.x0)>30 && d.depth===2)
+		.text(d => d.data.key || d.data.dest_name);
 	nodesCombined.filter(d => d.depth ===1 )
 		.select('rect')
 		.style('fill','none')
-		.style('stroke','#ccc')
-		.style('stroke-width','1px')
+		.style('stroke','none')
+		//.style('stroke','#ccc')
+		//.style('stroke-width','1px');
+	nodesCombined.filter(d => d.depth ===2 )
+		.select('rect')
+		.style('fill-opacity', .2)
 }

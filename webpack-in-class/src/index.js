@@ -105,7 +105,8 @@ function renderLineCharts(data){
 		.each(function(d){
 			lineChart(
 				d.values, 
-				this
+				this,
+				d.key
 			);
 		});
 }

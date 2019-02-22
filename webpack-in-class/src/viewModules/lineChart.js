@@ -6,7 +6,7 @@ function LineChart(){
 	const bisect = d3.bisector(d => d.key).right; //this will give us a function
 	let cb;
 
-	function exportFunction(data, rootDOM){
+	function exportFunction(data, rootDOM, key){
 
 		const W = rootDOM.clientWidth;
 		const H = rootDOM.clientHeight;
@@ -35,8 +35,10 @@ function LineChart(){
 			.tickSize(-innerWidth)
 			.ticks(3)
 
+		//Build DOM structure
 		const svg = d3.select(rootDOM)
 			.classed('line-chart',true)
+			.style('position','relative') //necessary to position <h3> correctly
 			.selectAll('svg')
 			.data([1])
 		const svgEnter = svg.enter()
@@ -44,6 +46,17 @@ function LineChart(){
 		svg.merge(svgEnter)
 			.attr('width', W)
 			.attr('height', H);
+
+		const title = d3.select(rootDOM)
+			.selectAll('h3')
+			.data([1]);
+		const titleEnter = title.enter()
+			.append('h3')
+			.style('position','absolute')
+			.style('left',`${margin.l}px`)
+			.style('top',`0px`)
+		title.merge(titleEnter)
+			.html(key);
 
 		//Append rest of DOM structure in the enter selection
 		const plotEnter = svgEnter.append('g')
