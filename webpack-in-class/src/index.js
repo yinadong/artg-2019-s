@@ -14,19 +14,21 @@ import {
 //View modules
 import Composition from './viewModules/Composition';
 import LineChart from './viewModules/LineChart';
+import Cartogram from './viewModules/Cartogram';
 
 //Create global dispatch object
 const globalDispatch = dispatch("change:country");
 
 //Build UI for countryTitle component
 const title = select('.country-view')
-	.insert('h1', '.composition-container')
+	.insert('h1', '.cartogram-container')
 	.html('World');
 
 globalDispatch.on('change:country', (code, displayName, migrationData) => {
 	title.html(displayName);
 	renderLineCharts(groupBySubregionByYear(code, migrationData));
 	renderComposition(migrationData.filter(d => d.origin_code === code));
+	renderCartogram(migrationData.filter(d => d.origin_code === code));
 });
 
 Promise.all([
@@ -50,9 +52,11 @@ Promise.all([
 
 			if(origin_metadata){
 				d.origin_subregion = origin_metadata.subregion;
+				d.origin_lngLat = origin_metadata.lngLat;
 			}
 			if(dest_metadata){
 				d.dest_subregion = dest_metadata.subregion;
+				d.dest_lngLat = dest_metadata.lngLat;
 			}
 
 			return d;
@@ -79,13 +83,12 @@ Promise.all([
 			const idx = this.selectedIndex;
 			const display = this.options[idx].innerHTML;
 
-			globalDispatch.call('change:country', null, code, display, migrationAugmented);
+			globalDispatch.call('change:country',null,code,display,migrationAugmented);
 		});
 
 });
 
 function renderLineCharts(data){
-
 	//Find max value in data
 	const maxValue = max( data.map(subregion => max(subregion.values, d => d.value)) ) //[]x18
 
@@ -112,10 +115,15 @@ function renderLineCharts(data){
 }
 
 function renderComposition(data){
-
 	select('.composition-container')
 		.each(function(){
-			Composition(this, data)
+			Composition(this, data);
 		});
+}
 
+function renderCartogram(data){
+	select('.cartogram-container')
+		.each(function(){
+			Cartogram(this, data);
+		});
 }

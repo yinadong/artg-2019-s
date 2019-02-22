@@ -35,8 +35,6 @@ export default function Composition(rootDOM, data){
 	//-- Layout using treemap
 	layout(treemapData);
 
-	console.log(treemapData);
-
 	//Build DOM
 	//Append new <svg> only once with enter/exit/update hack
 	const svg = select(rootDOM)
@@ -86,4 +84,6 @@ export default function Composition(rootDOM, data){
 	nodesCombined.filter(d => d.depth ===2 )
 		.select('rect')
 		.style('fill-opacity', .2)
+
+	
 }

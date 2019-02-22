@@ -125,7 +125,6 @@ function LineChart(){
 					.select('text')
 					.text(datum.value);
 
-				cb(datum.key);
 			})
 			.on('mouseleave', function(d){
 				plot.select('.tool-tip')
@@ -140,7 +139,6 @@ function LineChart(){
 	}
 
 	exportFunction.on = function(event, callback){
-		cb = callback;
 		return this;
 	}
 
