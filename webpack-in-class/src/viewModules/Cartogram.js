@@ -1,4 +1,9 @@
-import {nest, select, geoMercator, max, scaleSqrt} from 'd3';
+import {nest, select, geoMercator, max, scaleSqrt,
+	forceSimulation,
+	forceX,
+	forceY,
+	forceCollide
+} from 'd3';
 
 //API reference for force layout
 //https://github.com/d3/d3-force
@@ -37,6 +42,8 @@ export default function Cartogram(rootDOM, data){
 		d.y = xy[1];
 		return d;
 	});
+
+	console.log(dataByYear);
 
 	//Append DOM elements
 	const svg = select(rootDOM)
@@ -81,4 +88,19 @@ export default function Cartogram(rootDOM, data){
 		.filter(d => scaleSize(d.value)>30)
 		.text(d => d.dest_name);
 
+	//first configure the forces
+	const force_x = forceX().x(d => w/2);
+	const force_y = forceY().y(d => h/2);
+	const force_collide = forceCollide(d => scaleSize(d.value));
+	//combine the forces into a simulation
+	const simulation = forceSimulation()
+		.force('x', force_x)
+		.force('y', force_y)
+		.force('collide', force_collide);
+	simulation.nodes(dataByYear)
+		.on('tick', () => {
+			nodesCombined
+				.attr('transform', d => `translate(${d.x}, ${d.y})`);
+		})
+		.restart()
 }
