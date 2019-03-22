@@ -1,0 +1,33 @@
+.chart{
+	height:500px;
+}
+
+.node circle,
+.node rect{
+	fill-opacity:.5;
+	stroke:#333;
+	stroke-width:2px;
+}
+
+.node text{
+	fill:#333;
+	font-size:10px;
+}
+
+.link{
+	fill:none;
+	stroke:#aaa;
+	stroke-width:1px;
+}
+
+ .node {
+  cursor: pointer;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}

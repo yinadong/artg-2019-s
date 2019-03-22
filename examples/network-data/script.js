@@ -18,7 +18,7 @@ migrationDataPromise
 			d.x = w/2;
 			d.y = h/2;
 		});
-
+console.log(migrationDataPromise);
 		//Some basic data discovery
 		const maxLinkValue = d3.max(linksData, d => d.value);
 		const distScale = d3.scaleLog().domain([maxLinkValue, 1]).range([3,300]);

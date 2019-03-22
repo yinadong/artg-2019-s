@@ -32,12 +32,19 @@ const nodesData = Array.from({length:NUM_NODES}).map(d => {
 });
 
 //EXERCISE 1: Draw basic shapes
-//Drawing shapes 
-//Rect
+// acess the drawing contect of the canvas element, drawing context = pens
+const ctx1 = plot1Canvas.node().getContext('2d');
 
-//Path
-//ctx.beginPath()
+ctx1.fillStyle = 'rgb(255, 0, 0)';
+ctx1.fillRect(0,0,w/2,h/2);
+ctx1.fillStyle = 'white';
+ctx1.fillRect(0,0,w,h);
+ctx1.strokeStyle = 'black';
+ctx1.strokeRect(0,0,w/2,h/2);
 
+console.log(ctx1);
+
+ctx1.beginPath();
 //path methods
 //ctx.moveTo()
 //ctx.lineTo()
@@ -45,7 +52,53 @@ const nodesData = Array.from({length:NUM_NODES}).map(d => {
 //ctx.quadraticCurveTo()
 //ctx.bezierCurveTo()
 
+ctx1.moveTo(w/2, h/2);  //move your pens to here
+ctx1.lineTo(w, h/2);
+ctx1.lineTo(w/2, h);
+
 //ctx.closePath()
+ctx1.closePath();
+ctx1.fillStyle = 'yellow';
+ctx1.fill();
+
+ctx1.beginPath();
+
+ctx1.moveTo(w/2+50,h/2);
+ctx1.arc(w/2,h/2,50,0,Math.PI*2); // MATH IS RAdions
+
+ctx1.closePath();
+ctx1.fillStyle = 'blue';
+ctx1.strokeStyle = 'red';
+//ctx1.stroke();
+
+
+ctx1.beginPath()
+ctx1.moveTo(0,h);
+ctx1.quadraticCurveTo(w/2, h/2, w, h);
+ctx1.closePath();
+ctx1.fillStyle = 'purple';
+ctx1.fill();
+
+
+nodesData.forEach(d => {
+	ctx1.beginPath();
+	
+	ctx1.moveTo(d.x, d.y);
+	ctx1.arc(d.x, d.y, d.r, 0, Math.PI*2);
+
+    ctx1.closePath();
+    ctx1.fillStyle = d.color;
+    ctx1.fill();
+})
+
+//Drawing shapes 
+//Rect
+
+//Path
+//ctx.beginPath()
+
+
+
 
 //ctx.stroke()
 //ctx.fill()
@@ -57,7 +110,46 @@ renderFrame();
 
 function renderFrame(){
 
+	ctx1.fillStyle = 'white';
+	ctx1.fillRect(0,0,w,h);
+
+	//update nodesData slightly
+	nodesData.forEach(d => {
+		d.x += d.vx;
+		d.y += d.vy;
+
+		if(d.x < 0){
+			d.x = w;
+		}
+		if(d.x > w){
+			d.x = 0;
+		}
+		if(d.y < 0){
+			d.y = h;
+		}
+		if(d.y > h){
+			d.y = 0;
+		}
+
+		ctx1.beginPath();
+
+		ctx1.moveTo(d.x, d.y);
+		ctx1.arc(d.x, d.y, d.r, 0, Math.PI*2);
+
+		ctx1.closePath();
+		ctx1.fillStyle = d.color;
+		ctx1.fill();
+
+	});
+
+	requestAnimationFrame(renderFrame);
+
 }
+
+  // update nodesdata slightly
+ 
+
+
 
 
 

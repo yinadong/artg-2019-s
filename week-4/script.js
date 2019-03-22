@@ -15,29 +15,37 @@ Promise.all([
 		const metadata_tmp = metadata.map(a => {
 			return [a.iso_num, a]
 		});
+		console.log(metadata_tmp);
 		const metadataMap = new Map(metadata_tmp);
+		console.log(metadataMap);
 
+        console.log(migration);
 		const migrationAugmented = migration.map(d => {
+			console.log(d);
 
-			const origin_code = countryCode.get(d.origin_name);
+			const origin_code = countryCode.get(d.origin_name); // "get(d.origin_name)" = country code"
 			const dest_code = countryCode.get(d.dest_name);
+			//console.log(origin_code); //is the countrycode, to generate the conde for origin and dest
 
 			d.origin_code = origin_code;
 			d.dest_code = dest_code;
 
-			//Take the 3-digit code, get metadata record
-			const origin_metadata = metadataMap.get(origin_code);
+			//Take the 3-digit code, get metadata recorda
+			const origin_metadata = metadataMap.get(origin_code); //'get(origin_code)' = array of metadat
 			const dest_metadata = metadataMap.get(dest_code);
+			//console.log(origin_metadata); //generate original metadata to origin-metadata, dest-metdata
 
 			if(origin_metadata){
-				d.origin_subregion = origin_metadata.subregion;
+				d.origin_subregion = origin_metadata.subregion; // get the d.origin_subregion
 			}
 			if(dest_metadata){
 				d.dest_subregion = dest_metadata.subregion;
 			}
 
-			return d;
-		});
+			return d;  //generate the subregion's name for origin and dest  
+			 // filter whole array, then generate each variables value*/
+		});   
+		console.log(migrationAugmented);
 		
 		//Migration from the US (840) to any other place in the world
 		//filter the larger migration dataset to only the subset coming from the US
@@ -49,6 +57,8 @@ Promise.all([
 			.key(d => d.year)
 			.rollup(values => d3.sum(values, d => d.value))
 			.entries(migrationFiltered);
+
+		console.log(subregionsData);
 
 		d3.select('.main')
 			.selectAll('.chart') //0 
