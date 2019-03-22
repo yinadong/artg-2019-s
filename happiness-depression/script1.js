@@ -89,7 +89,8 @@ Promise.all([
 	function drawScatter(data, selection){
 	//When we receive data, we can perform one additional transformation to make life easier for us
 	//Data discovery
-	console.log(data)//have to convert o flat data
+	console.log(data[0].values[0].happinessvalue)//have to convert o flat data
+	
 	
 	const happinessExtent = d3.extent(data, function(d){ return d.values.happiness});
 	const depressionExtent = d3.extent(data, function(d){ return d.values.depressive});
