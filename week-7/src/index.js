@@ -1,5 +1,5 @@
 import './style.css';
-import 'bootstrap/dist/css/bootstrap.css';
+//import 'bootstrap/dist/css/bootstrap.css';
 import {select, max, dispatch} from 'd3';
 
 import {

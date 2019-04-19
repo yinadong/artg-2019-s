@@ -129,11 +129,11 @@ function renderCartogram(data){
 function renderMenu(countryCode){
 	//Get list of countryCode values
 	const countryList = Array.from(countryCode.entries());
-
+ console.log(countryList);
 	//Build UI for <select> menu
 	let menu = select('.nav')
 		.selectAll('select')
-		.data([1]);
+		.data([3]);
 	menu = menu.enter()
 		.append('select')
 		.attr('class','form-control form-control-sm')
@@ -151,6 +151,7 @@ function renderMenu(countryCode){
 		const code = this.value; //3-digit code
 		const idx = this.selectedIndex;
 		const display = this.options[idx].innerHTML;
+		console.log(this);
 
 		globalDispatch.call('change:country',null,code,display);
 	});

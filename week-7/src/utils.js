@@ -54,7 +54,7 @@ function parseMigrationData(d){
 	return migrationFlows;
 }
 
-function groupBySubregionByYear(data){
+/*function groupBySubregionByYear(data){
 
 	const subregionsData = nest()
 		.key(d => d.dest_subregion)
@@ -63,12 +63,11 @@ function groupBySubregionByYear(data){
 		.entries(data);
 
 	return subregionsData;
-
-}
-
+}*/
+//console.log(groupBySubregionByYear);
 export {
 	parseMigrationData,
 	parseMetadata,
 	parseCountryCode,
-	groupBySubregionByYear
+	//groupBySubregionByYear
 }

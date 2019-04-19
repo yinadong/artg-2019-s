@@ -30,7 +30,7 @@ export default function Cartogram(rootDOM, data){
 	console.log(dataByYear);
 	//Discover max value to set the size of circles
 	const maxValue = max(dataByYear, d => d.value);
-	scaleSize.domain([0, maxValue]);
+	d3.scaleSize.domain([0, maxValue]);
 
 	//Layout function:
 	//Use geographic representation for cartogram
