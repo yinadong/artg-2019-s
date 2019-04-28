@@ -11,8 +11,6 @@ import {
 } from './utils';
 
 //View modules
-//import Composition from './viewModules/Composition';
-//import LineChart from './viewModules/LineChart';
 import Cartogram from './viewModules/Cartogram';
 
 
@@ -33,20 +31,6 @@ globalDispatch.on('change:country', (code, displayName) => {
 	//Update other view modules
 	migrationDataCombined.then(data => {
 		const filteredData = data.filter(d => d.origin_code === originCode);
-		//renderLineCharts(groupBySubregionByYear(filteredData));
-		//renderComposition(filteredData, currentYear);
-		renderCartogram(filteredData, currentYear);
-	});
-});
-
-
-globalDispatch.on('change:year', year => {
-	currentYear = +year;
-
-	//Update other view modules
-	migrationDataCombined.then(data => {
-		const filteredData = data.filter(d => d.origin_code === originCode);
-		//renderComposition(filteredData, currentYear);
 		renderCartogram(filteredData, currentYear);
 	});
 });

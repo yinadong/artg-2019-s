@@ -18,7 +18,7 @@ Promise.all([
 				return [d.iso_num, d]
 			});
 		//console.log(metadata_tmp);
-		console.log(countryCode.get("Other North"));
+		//console.log(countryCode.get("Other North"));
 		const metadataMap = new Map(metadata_tmp);
 		console.log(metadataMap);
 
@@ -79,8 +79,12 @@ Promise.all([
 		});
 
 		console.log(migration_origin_totals);
-		drawCartogram(migration_origin_by_country, plot);
-		//drawCartogram(d3.select('.cartogram').node(), migration_origin_by_country);
+		
+		drawCartogram(
+			d3.select('.cartogram').node(), 
+			migration_origin_totals
+		);
+		
 	})
 
 //YOUR CODE HERE
@@ -96,13 +100,8 @@ function drawCartogram(rootDom, data){
 
 	//projection function: takes [lng, lat] pair and returns [x, y] coordinates
 	const projection = d3.geoMercator()
-		.translate([w/2, h/2]);
-	data = data.map(d => {
-		const xy = d.origin_lngLat?projection(d.origin_lngLat):[w/2,h/2];
-		d.x = xy[0];
-		d.y = xy[1];
-		return d;
-	});
+		.translate([w/2, h/2])
+		.scale(180);
 
 	//Scaling function for the size of the cartogram symbols
 	//Assuming the symbols are circles, we use a square root scale
@@ -110,48 +109,39 @@ function drawCartogram(rootDom, data){
 
 	//Complete the rest of the code here
 	//Build the DOM structure using enter / exit / update
-	const svg = select(rootDom)
-		.classed('cartogram',true)
-		.selectAll('svg')
-		.data([1]);
-	const svgEnter = svg.enter()
-		.append('svg');
-	svgEnter
-		.append('g').attr('class','plot');
-
-	const plot = svg.merge(svgEnter)
-		.attr('width', W)
-		.attr('height', H)
-		.select('.plot')
-		.attr('transform', `translate(${margin.l}, ${margin.t})`);
-
+	const plot = d3.select(rootDom)
+		.append('svg')
+		.attr('width', w)
+		.attr('height', h)
+		.append('g');
 
 	const nodes = plot.selectAll('.node')
-		.data(data, d => d.origin_code);
+		.data(data, d => d.key);
+	const nodesEnter = nodes.enter().append('g')
+		.attr('class', 'node');
+	nodesEnter.append('circle');
+	nodesEnter.append('text').attr('text-anchor', 'middle');
 
-	nodes.exit().remove();
-
-	const nodesEnter = nodes.enter()
-		.append('g').attr('class','node')
-		.attr('transform', d => `translate(${d.x}, ${d.y})`);
-	nodesEnter.append('circle')
-		.attr('stroke','#333')
-		.attr('stroke-width','1px')
-		.attr('fill-opacity',.1);
-	nodesEnter.append('text')
-		.attr('text-anchor','middle');
-	const nodesCombined = nodes.merge(nodesEnter);
-	nodesCombined
-		//.transition()
-		.attr('transform', d => `translate(${d.x}, ${d.y})`);
-	nodesCombined
+	nodes.merge(nodesEnter)
+		.filter(d => d.values[0].lngLat)
+		.attr('transform', d => {
+			const xy = projection(d.lngLat);
+			return `translate(${xy[0]}, ${xy[1]})`;
+		})
+	nodes.merge(nodesEnter)
 		.select('circle')
-		.transition()
-		.attr('r', d => scaleSize(d.value));
-	nodesCombined
+		.attr('r', d => scaleSize(d.value))
+		.style('fill-opacity', .03)
+		.style('stroke', '#000')
+		.style('stroke-width', '1px')
+		.style('stroke-opacity', .2)
+	nodes.merge(nodesEnter)
 		.select('text')
-		.filter(d => scaleSize(d.value)>30)
-		.text(d => d.origin_code);
+		.attr('y', d => -scaleSize(d.value))
+		.filter(d => d.value > 1000000)
+		.text(d => d.name_display)
+		.style('font-family', 'sans-serif')
+		.style('font-size', '10px')
 
 }
 

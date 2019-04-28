@@ -69,6 +69,18 @@ const radios = d3.selectAll('input')
 		);
 	});
 
+/* Example for handling form submit 
+ */
+d3.select('.custom-form').on('submit', function(){
+	d3.event.preventDefault();
+	const formData = new FormData(this);
+	console.group('Form submit event');
+	console.log(formData.get('email'));
+	console.log(formData.get('password'));
+	console.log(formData.get('check'));
+	console.groupEnd();
+});
+
 /* Example for a range slider implementation 
  * Range slider is implemented as a reusable, configurable module
  */
